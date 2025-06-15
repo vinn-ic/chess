@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 
 using namespace std;
@@ -13,12 +14,16 @@ class Pieces{
         vector<string> PosP;
         Texture2D T;
         map<string,Vector2> pgn;
+        map<string, string> pgnForPieces;
+        string piece;
         
 
-        Pieces(vector<string> PosP, Texture2D T, map<string,Vector2> pgn){
+        Pieces(vector<string> PosP, Texture2D T, map<string,Vector2> pgn, map<string, string> pgnForPieces,string piece){
             this->PosP = PosP;
             this->T = T;
             this->pgn = pgn;
+            this->pgnForPieces = pgnForPieces;
+            this->piece = piece;
         }
 
         void DrawP(){
@@ -35,9 +40,9 @@ class Pieces{
 
 int main(){
     
-
-    
+    string casa;
     map<string, Vector2> pgn;
+    map<string, string> pgnForPieces;
 
 
     int telaX = 800;
@@ -61,12 +66,31 @@ int main(){
             float y = rowIndex * quadrado;
 
             pgn[key] = Vector2{ x, y };
+            if(key[1] == '2' || key[1] == '7'){
+                pgnForPieces[key] = "peao";
+            }else if(key == "A1" || key == "A8" || key == "H1" || key == "H8"){
+                pgnForPieces[key] = "torre";
+            }else if(key == "B1" || key == "B8" || key == "G1" || key == "G8"){
+                pgnForPieces[key] = "cavalo";
+            }else if(key == "C1" || key == "C8" || key == "F1" || key == "F8"){
+                pgnForPieces[key] = "bispo";
+            }else if(key == "D1" || key == "D8"){
+                pgnForPieces[key] = "rainha";
+            }else if(key == "E1" || key == "E8"){
+                pgnForPieces[key] = "rei";
+            }else{
+                pgnForPieces[key] = "";
+            }
             
         }
     }
 
     for(auto& p : pgn){
         printf("%s -> (%.1f, %.1f)\n", p.first.c_str(), p.second.x, p.second.y);
+    }
+ 
+    for(auto& PFP : pgnForPieces){
+        printf("%s>>%s\n", PFP.first.c_str(), PFP.second.c_str());
     }
 
     
@@ -93,12 +117,12 @@ int main(){
     Texture2D TB = LoadTextureFromImage(B);
     Texture2D TT = LoadTextureFromImage(T);
 
-    Pieces Pawn({"A2","B2","C2","D2","E2","F2","G2","H2"}, Tp,pgn);
-    Pieces Queen({"D1"},TQ,pgn);
-    Pieces King({"E1"},TK,pgn);
-    Pieces vacalo({"B1","G1"},TH,pgn);
-    Pieces papa({"C1","F1"},TB,pgn);
-    Pieces TorresGemeas({"A1","H1"},TT, pgn);
+    Pieces Pawn({"A2","B2","C2","D2","E2","F2","G2","H2"}, Tp,pgn, pgnForPieces,"pawn");
+    Pieces Queen({"D1"},TQ,pgn, pgnForPieces,"queen");
+    Pieces King({"E1"},TK,pgn, pgnForPieces,"king");
+    Pieces vacalo({"B1","G1"},TH,pgn,pgnForPieces,"knight");
+    Pieces papa({"C1","F1"},TB,pgn,pgnForPieces,"bishop");
+    Pieces TorresGemeas({"A1","H1"},TT, pgn,pgnForPieces,"rook");
 
     //
     Image pBlack = LoadImage("../imgs/pieces/black/pawn.png");
@@ -122,12 +146,12 @@ int main(){
     Texture2D TBBlack = LoadTextureFromImage(BBlack);
     Texture2D TTBlack = LoadTextureFromImage(TBlack);
 
-    Pieces PawnBlack({"A7","B7","C7","D7","E7","F7","G7","H7"}, TpBlack, pgn);
-    Pieces QueenBlack({"D8"}, TQBlack, pgn);
-    Pieces KingBlack({"E8"}, TKBlack, pgn);
-    Pieces vacaloBlack({"B8","G8"}, THBlack, pgn);
-    Pieces papaBlack({"C8","F8"}, TBBlack, pgn);
-    Pieces TorresGemeasBlack({"A8","H8"}, TTBlack, pgn);
+    Pieces PawnBlack({"A7","B7","C7","D7","E7","F7","G7","H7"}, TpBlack, pgn,pgnForPieces,"pawn");
+    Pieces QueenBlack({"D8"}, TQBlack, pgn,pgnForPieces,"queen");
+    Pieces KingBlack({"E8"}, TKBlack, pgn,pgnForPieces,"king");
+    Pieces vacaloBlack({"B8","G8"}, THBlack, pgn,pgnForPieces,"knight");
+    Pieces papaBlack({"C8","F8"}, TBBlack, pgn,pgnForPieces,"bishop");
+    Pieces TorresGemeasBlack({"A8","H8"}, TTBlack, pgn,pgnForPieces,"rook");
 
 
 
@@ -138,12 +162,14 @@ int main(){
             for(int coluna = 0; coluna < board;coluna++){
                 Color color = ((linha + coluna) % 2 == 0) ? WHITE : GRAY;
                 DrawRectangle(coluna * quadrado, linha * quadrado, quadrado, quadrado, color);
-                
-            }
-
-            
+               
+            }  
+        }
+        if(!casa.empty()){
+            DrawRectangle(pgn[casa].x,pgn[casa].y,100,100,YELLOW);
         }
 
+        Vector2 posMouse = GetMousePosition();
 
 
         Pawn.DrawP();
@@ -159,10 +185,30 @@ int main(){
         vacaloBlack.DrawP();
         papaBlack.DrawP();
         TorresGemeasBlack.DrawP();
+        
+        if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+            
+            string piece;
+            float x = posMouse.x;
+            float y = posMouse.y;
 
+            for(auto& cord : pgn){
+                float cx = cord.second.x;
+                float cy = cord.second.y;
+                
+                if(abs((cx+50) - x) <= 50 && abs((cy + 50) - y) <= 50){
+                    casa = cord.first.c_str();
+                    piece = pgnForPieces[casa];
+                }
+            }
+            
+            printf("click >> %s=%s \n", casa.c_str(),piece.c_str());
+            
+        }
+        
         EndDrawing();
     }
-    UnloadTexture(Tp);
+    
 
 
     return 0;
