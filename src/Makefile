@@ -1,20 +1,20 @@
 # Nome do executável
-TARGET = main.exe
+TARGET = main
 
 # Código fonte
 SRC = main.cpp
 
-# Caminhos e flags
-INCLUDE = -I"C:/raylib/src"
-LIBS = -L"C:/raylib/build/raylib" -lraylib -lopengl32 -lgdi32 -lwinmm
+# Caminhos e flags (ajuste para subir um nível)
+INCLUDE = -I./media/vinicius-pc/PENDRIVE/raylib/include
+LIBS = -L./media/vinicius-pc/PENDRIVE/raylib/lib -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
-# Compiladorg
+# Compilador
 CXX = g++
 
-# Regras
+# Regra principal
 $(TARGET): $(SRC)
 	$(CXX) $(SRC) -o $(TARGET) $(INCLUDE) $(LIBS)
 
-# Limpeza (opcional)
+# Limpeza
 clean:
 	rm -f $(TARGET)
