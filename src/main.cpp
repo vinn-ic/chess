@@ -4,31 +4,31 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-
-
+#include <algorithm>
 
 using namespace std;
 
 
 class Pieces{
     public:
-        vector<string> PosP;
+        
         Texture2D T;
         map<string,Vector2> pgn;
-        map<string, char> pgnForPieces;
-        string piece;
+        map<string, char> pgnForrrPieces;
+        char piece;
 
-        Pieces(vector<string> PosP, Texture2D T, map<string,Vector2> pgn, map<string, char> pgnForPieces,char piece){
-            this->PosP = PosP;
+        Pieces( Texture2D T, map<string,Vector2> pgn, map<string, char>& pgnForrrPieces,char piece){
             this->T = T;
             this->pgn = pgn;
-            this->pgnForPieces = pgnForPieces;
+            this->pgnForrrPieces = pgnForrrPieces;
             this->piece = piece;
         }
-        void DrawP(){
+        void DrawP(map<string,char>& pgnForPieces){
             
-            for(auto& cord : PosP){
-                DrawTexture(T, pgn[cord].x,pgn[cord].y,WHITE);
+            for(auto& pgnFP : pgnForPieces){
+                if(pgnFP.second == piece){
+                    DrawTexture(T, pgn[pgnFP.first].x,pgn[pgnFP.first].y,WHITE);
+                }
             }
         }
         
@@ -41,7 +41,7 @@ Color YELLOW_LIGHT = {255, 255, 153, 255};
 
 
 int main(){
-    
+    string PieceCaseMove;
     string casa;
     vector<string> casasAlvos;
 
@@ -71,20 +71,32 @@ int main(){
             float y = rowIndex * quadrado;
 
             pgn[key] = Vector2{ x, y };
-            if(key[1] == '2' || key[1] == '7'){
+            if(key[1] == '2') {
                 pgnForPieces[key] = 'P';
-            }else if(key == "A1" || key == "A8" || key == "H1" || key == "H8"){
+            } else if(key[1] == '7') {
+                pgnForPieces[key] = 'p';
+            } else if(key == "A1" || key == "H1") {
                 pgnForPieces[key] = 'T';
-            }else if(key == "B1" || key == "B8" || key == "G1" || key == "G8"){
+            } else if(key == "A8" || key == "H8") {
+                pgnForPieces[key] = 't';
+            } else if(key == "B1" || key == "G1") {
                 pgnForPieces[key] = 'C';
-            }else if(key == "C1" || key == "C8" || key == "F1" || key == "F8"){
-                pgnForPieces[key] = 'B';
-            }else if(key == "D1" || key == "D8"){
-                pgnForPieces[key] = 'D';
-            }else if(key == "E1" || key == "E8"){
+            } else if(key == "B8" || key == "G8") {
+                pgnForPieces[key] = 'c';  
+            } else if(key == "C1" || key == "F1") {
+                pgnForPieces[key] = 'B';  
+            } else if(key == "C8" || key == "F8") {
+                pgnForPieces[key] = 'b';
+            } else if(key == "D1") {
+                pgnForPieces[key] = 'D';  
+            } else if(key == "D8") {
+                pgnForPieces[key] = 'd'; 
+            } else if(key == "E1") {
                 pgnForPieces[key] = 'R';
-            }else{
-                pgnForPieces[key] = '_';
+            } else if(key == "E8") {
+                pgnForPieces[key] = 'r';  
+            } else {
+                pgnForPieces[key] = '_';   
             }
             
         }
@@ -116,12 +128,12 @@ int main(){
     Texture2D TB = LoadTextureFromImage(B);
     Texture2D TT = LoadTextureFromImage(T);
 
-    Pieces Pawn({"A2","B2","C2","D2","E2","F2","G2","H2"}, Tp,pgn, pgnForPieces,'P');
-    Pieces Queen({"D1"},TQ,pgn, pgnForPieces,'D');
-    Pieces King({"E1"},TK,pgn, pgnForPieces,'R');
-    Pieces vacalo({"B1","G1"},TH,pgn,pgnForPieces,'C');
-    Pieces papa({"C1","F1"},TB,pgn,pgnForPieces,'B');
-    Pieces TorresGemeas({"A1","H1"},TT, pgn,pgnForPieces,'T');
+    Pieces Pawn(Tp,pgn, pgnForPieces,'P');
+    Pieces Queen(TQ,pgn, pgnForPieces,'D');
+    Pieces King(TK,pgn, pgnForPieces,'R');
+    Pieces vacalo(TH,pgn,pgnForPieces,'C');
+    Pieces papa(TB,pgn,pgnForPieces,'B');
+    Pieces TorresGemeas(TT, pgn,pgnForPieces,'T');
 
     //
     Image pBlack = LoadImage("../imgs/pieces/black/pawn.png");
@@ -145,12 +157,12 @@ int main(){
     Texture2D TBBlack = LoadTextureFromImage(BBlack);
     Texture2D TTBlack = LoadTextureFromImage(TBlack);
 
-    Pieces PawnBlack({"A7","B7","C7","D7","E7","F7","G7","H7"}, TpBlack, pgn,pgnForPieces,'P');
-    Pieces QueenBlack({"D8"}, TQBlack, pgn,pgnForPieces,'D');
-    Pieces KingBlack({"E8"}, TKBlack, pgn,pgnForPieces,'R');
-    Pieces vacaloBlack({"B8","G8"}, THBlack, pgn,pgnForPieces,'C');
-    Pieces papaBlack({"C8","F8"}, TBBlack, pgn,pgnForPieces,'B');
-    Pieces TorresGemeasBlack({"A8","H8"}, TTBlack, pgn,pgnForPieces,'T');
+    Pieces PawnBlack(TpBlack, pgn,pgnForPieces,'p');
+    Pieces QueenBlack(TQBlack, pgn,pgnForPieces,'d');
+    Pieces KingBlack(TKBlack, pgn,pgnForPieces,'r');
+    Pieces vacaloBlack(THBlack, pgn,pgnForPieces,'c');
+    Pieces papaBlack( TBBlack, pgn,pgnForPieces,'b');
+    Pieces TorresGemeasBlack(TTBlack, pgn,pgnForPieces,'t');
 
     for(auto& p : pgn){
         printf("%s -> (%.1f, %.1f)\n", p.first.c_str(), p.second.x, p.second.y);
@@ -172,42 +184,52 @@ int main(){
         }
         if(!casa.empty()){
             DrawRectangle(pgn[casa].x,pgn[casa].y,100,100,YELLOW);
+            PieceCaseMove = casa;
+            
             
             switch(pieceForCase){
+                case 'p':
                 case 'P':
-                    if(casa[1] == '2'){
+                    if(pgnForPieces[casa] == 'P'){
 
                         auto it = pgn.find(casa);
                         if (it != pgn.end()){
                             it++;
-                            if(casasAlvos.size() >= 6){
+                            if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
                                 casasAlvos.clear();
-                            }else if(casasAlvos.size() <= 2){
                                 casasAlvos.push_back(it->first.c_str());
-                                
                             }
                             
-                            if(it != pgn.end()){
-                                DrawRectangle(it->second.x, it->second.y,100,100,YELLOW_LIGHT);
+                            DrawRectangle(it->second.x, it->second.y,100,100,YELLOW_LIGHT);
+                            
+                            if(it != pgn.end() && casa[1] == '2'){
                                 it++;
-                                if(casasAlvos.size() <= 6){
+                                if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
                                     casasAlvos.push_back(it->first.c_str());
                                 }
-                                if(it != pgn.end()){
-                                    DrawRectangle(it->second.x,it->second.y,100,100,YELLOW_LIGHT);
-                                }
+                            
+                                DrawRectangle(it->second.x,it->second.y,100,100,YELLOW_LIGHT);
+                                
                             }
                         }       
                     }
-                    else if(casa[1] == '7'){
+                    else if(pgnForPieces[casa] == 'p'){
                         auto it = pgn.find(casa);
                         if (it != pgn.end()){
                             it--;
                             
                             if(it != pgn.end()){
+                                if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
+                                    casasAlvos.clear();
+                                    casasAlvos.push_back(it->first.c_str());
+                                }
                                 DrawRectangle(it->second.x, it->second.y,100,100,YELLOW_LIGHT);
                                 it--;
-                                if(it != pgn.end()){
+                                if(it != pgn.end() && casa[1] ==  '7'){
+                                    if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
+                                        casasAlvos.push_back(it->first.c_str());
+                                        
+                                    }
                                     DrawRectangle(it->second.x,it->second.y,100,100,YELLOW_LIGHT);
                                 }
                             }
@@ -216,24 +238,27 @@ int main(){
                     break;
             
             }
+            for(auto& casa : casasAlvos){
+                printf("casas alvos>> %s\n", casa.c_str());
+            }
         }   
 
         Vector2 posMouse = GetMousePosition();
 
 
-        Pawn.DrawP();
-        Queen.DrawP();
-        King.DrawP();
-        vacalo.DrawP();
-        papa.DrawP();
-        TorresGemeas.DrawP();
+        Pawn.DrawP(pgnForPieces);
+        Queen.DrawP(pgnForPieces);
+        King.DrawP(pgnForPieces);
+        vacalo.DrawP(pgnForPieces);
+        papa.DrawP(pgnForPieces);
+        TorresGemeas.DrawP(pgnForPieces);
         //
-        PawnBlack.DrawP();
-        QueenBlack.DrawP();
-        KingBlack.DrawP();
-        vacaloBlack.DrawP();
-        papaBlack.DrawP();
-        TorresGemeasBlack.DrawP();
+        PawnBlack.DrawP(pgnForPieces);
+        QueenBlack.DrawP(pgnForPieces);
+        KingBlack.DrawP(pgnForPieces);
+        vacaloBlack.DrawP(pgnForPieces);
+        papaBlack.DrawP(pgnForPieces);
+        TorresGemeasBlack.DrawP(pgnForPieces);
         
         if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
             float x = posMouse.x;
@@ -252,6 +277,16 @@ int main(){
             
             
             printf("click >> %s=%c \n", casa.c_str(),pieceForCase);
+            for(auto& I : casasAlvos){
+                if(casa == I){
+                    char pedra = pgnForPieces[PieceCaseMove]; 
+                    pgnForPieces.erase(PieceCaseMove);
+                    pgnForPieces[casa] = pedra;
+                }else if(casa.c_str() != I){
+                    casasAlvos.clear();
+                }
+            }
+            
             
         }
         
