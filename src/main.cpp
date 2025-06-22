@@ -42,6 +42,7 @@ Color YELLOW_LIGHT = {255, 255, 153, 255};
 
 int main(){
     string PieceCaseMove;
+    char pedra;
     string casa;
     vector<string> casasAlvos;
 
@@ -185,6 +186,7 @@ int main(){
         if(!casa.empty()){
             DrawRectangle(pgn[casa].x,pgn[casa].y,100,100,YELLOW);
             PieceCaseMove = casa;
+            pedra = pgnForPieces[casa];
             
             
             switch(pieceForCase){
@@ -193,44 +195,89 @@ int main(){
                     if(pgnForPieces[casa] == 'P'){
 
                         auto it = pgn.find(casa);
-                        if (it != pgn.end()){
-                            it++;
-                            if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
-                                casasAlvos.clear();
-                                casasAlvos.push_back(it->first.c_str());
+                        if (it != pgn.end() ){
+                            if(casa[0] > 'A' && casa[1] < '8'){
+                                string diagEsq = string(1, casa[0] - 1) + string(1,casa[1] + 1);
+                                if(pgnForPieces[diagEsq] != '_' && islower(pgnForPieces[diagEsq])){
+                                    casasAlvos.push_back(diagEsq);
+                                    DrawRectangle(pgn[diagEsq].x,pgn[diagEsq].y,100,100,YELLOW_LIGHT);
+                                }
                             }
-                            
-                            DrawRectangle(it->second.x, it->second.y,100,100,YELLOW_LIGHT);
-                            
-                            if(it != pgn.end() && casa[1] == '2'){
-                                it++;
+                            if(casa[0] < 'H' && casa[1] < '8'){
+                                string diagDir = string(1, casa[0]+1) + string(1,casa[1]+1);
+                                if(pgnForPieces[diagDir] != '_' && islower(pgnForPieces[diagDir])){
+                                    casasAlvos.push_back(diagDir);
+                                    DrawRectangle(pgn[diagDir].x, pgn[diagDir].y, 100,100,YELLOW_LIGHT);
+                                }
+                            }
+                           
+                             
+
+                            it++;
+                            if(pgnForPieces[it->first] == '_'){
+
                                 if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
+                                    casasAlvos.clear();
                                     casasAlvos.push_back(it->first.c_str());
                                 }
-                            
-                                DrawRectangle(it->second.x,it->second.y,100,100,YELLOW_LIGHT);
                                 
+                                DrawRectangle(it->second.x, it->second.y,100,100,YELLOW_LIGHT);
+                                
+                                if(it != pgn.end() && casa[1] == '2'){
+                                    it++;
+                                    if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
+                                        casasAlvos.push_back(it->first.c_str());
+                                    }
+                                    
+                                    DrawRectangle(it->second.x,it->second.y,100,100,YELLOW_LIGHT);
+                                    
+                                }
                             }
-                        }       
+                        }
+                         
                     }
                     else if(pgnForPieces[casa] == 'p'){
                         auto it = pgn.find(casa);
                         if (it != pgn.end()){
                             it--;
-                            
-                            if(it != pgn.end()){
-                                if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
-                                    casasAlvos.clear();
-                                    casasAlvos.push_back(it->first.c_str());
-                                }
-                                DrawRectangle(it->second.x, it->second.y,100,100,YELLOW_LIGHT);
-                                it--;
-                                if(it != pgn.end() && casa[1] ==  '7'){
-                                    if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
-                                        casasAlvos.push_back(it->first.c_str());
-                                        
+
+                            if (it != pgn.end()) {
+
+                               
+                                if (casa[0] > 'A' && casa[1] > '1') {
+                                    string diagEsq = string(1, casa[0] - 1) + string(1, casa[1] - 1);
+                                    if (pgnForPieces[diagEsq] != '_' && isupper(pgnForPieces[diagEsq])) {
+                                        casasAlvos.push_back(diagEsq);
+                                        DrawRectangle(pgn[diagEsq].x, pgn[diagEsq].y, 100, 100, YELLOW_LIGHT);
                                     }
-                                    DrawRectangle(it->second.x,it->second.y,100,100,YELLOW_LIGHT);
+                                }
+
+                            
+                                if (casa[0] < 'H' && casa[1] > '1') {
+                                    string diagDir = string(1, casa[0] + 1) + string(1, casa[1] - 1);
+                                    if (pgnForPieces[diagDir] != '_' && isupper(pgnForPieces[diagDir])) {
+                                        casasAlvos.push_back(diagDir);
+                                        DrawRectangle(pgn[diagDir].x, pgn[diagDir].y, 100, 100, YELLOW_LIGHT);
+                                    }
+                                }
+                            }
+
+
+                            if(pgnForPieces[it->first] == '_'){    
+                                if(it != pgn.end()){
+                                    if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
+                                        casasAlvos.clear();
+                                        casasAlvos.push_back(it->first.c_str());
+                                    }
+                                    DrawRectangle(it->second.x, it->second.y,100,100,YELLOW_LIGHT);
+                                    it--;
+                                    if(it != pgn.end() && casa[1] ==  '7'){
+                                        if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
+                                            casasAlvos.push_back(it->first.c_str());
+                                            
+                                        }
+                                        DrawRectangle(it->second.x,it->second.y,100,100,YELLOW_LIGHT);
+                                    }
                                 }
                             }
                         } 
@@ -279,14 +326,16 @@ int main(){
             printf("click >> %s=%c \n", casa.c_str(),pieceForCase);
             for(auto& I : casasAlvos){
                 if(casa == I){
-                    char pedra = pgnForPieces[PieceCaseMove]; 
-                    pgnForPieces.erase(PieceCaseMove);
+                    cout << pedra << "  ERROEROEROEROEROOEROEOREOROEROEOROEROOROEOREO" << "\n";
+                    pgnForPieces[PieceCaseMove] = '_';
                     pgnForPieces[casa] = pedra;
-                }else if(casa.c_str() != I){
+                    
+                    PieceCaseMove = "";
                     casasAlvos.clear();
-                }
+                
             }
-            
+        }
+        
             
         }
         
