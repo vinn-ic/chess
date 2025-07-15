@@ -1,20 +1,27 @@
 # Nome do executável
 TARGET = main
 
-# Código fonte
-SRC = main.cpp
-
-# Caminhos e flags (ajuste para subir um nível)
-INCLUDE = -I./media/vinicius-pc/PENDRIVE/raylib/include
-LIBS = -L./media/vinicius-pc/PENDRIVE/raylib/lib -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
-
 # Compilador
 CXX = g++
 
-# Regra principal
-$(TARGET): $(SRC)
-	$(CXX) $(SRC) -o $(TARGET) $(INCLUDE) $(LIBS)
+# Arquivos fonte
+SRC = main.cpp
 
-# Limpeza
+# Diretórios de include e biblioteca
+INCLUDES = -I/home/vinicius-pc/raylib/build/raylib/include/
+LIBDIRS  = -L/home/vinicius-pc/raylib/build/raylib/
+
+# Bibliotecas necessárias
+LIBS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+
+# Flags de compilação
+CXXFLAGS = $(INCLUDES)
+LDFLAGS  = $(LIBDIRS) $(LIBS)
+
+# Regra padrão
+all:
+	$(CXX) $(SRC) -o $(TARGET) $(CXXFLAGS) $(LDFLAGS)
+
+# Limpar arquivos gerados
 clean:
 	rm -f $(TARGET)

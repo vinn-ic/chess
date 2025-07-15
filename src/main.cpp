@@ -5,9 +5,9 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <iterator>
 
 using namespace std;
-
 
 class Pieces{
     public:
@@ -43,8 +43,10 @@ Color YELLOW_LIGHT = {255, 255, 153, 255};
 int main(){
     string PieceCaseMove;
     char pedra;
+    bool isWhiteMove = true;
     string casa;
     vector<string> casasAlvos;
+    bool apagaressamerda = false; 
 
     char pieceForCase;
     map<string, Vector2> pgn;
@@ -183,111 +185,321 @@ int main(){
                
             }  
         }
+
         if(!casa.empty()){
             DrawRectangle(pgn[casa].x,pgn[casa].y,100,100,YELLOW);
             PieceCaseMove = casa;
             pedra = pgnForPieces[casa];
             
-            
-            switch(pieceForCase){
-                case 'p':
-                case 'P':
-                    if(pgnForPieces[casa] == 'P'){
-
+            if(isWhiteMove){//arrumar isso depois esses whitch e ifs do iswhitemove
+                switch(pieceForCase){
+                    case 'P': {
                         auto it = pgn.find(casa);
                         if (it != pgn.end() ){
                             if(casa[0] > 'A' && casa[1] < '8'){
                                 string diagEsq = string(1, casa[0] - 1) + string(1,casa[1] + 1);
-                                if(pgnForPieces[diagEsq] != '_' && islower(pgnForPieces[diagEsq])){
+                                if(pgn.count(diagEsq) > 0 && pgnForPieces[diagEsq] != '_' && islower(pgnForPieces[diagEsq])){
                                     casasAlvos.push_back(diagEsq);
-                                    DrawRectangle(pgn[diagEsq].x,pgn[diagEsq].y,100,100,YELLOW_LIGHT);
                                 }
                             }
                             if(casa[0] < 'H' && casa[1] < '8'){
                                 string diagDir = string(1, casa[0]+1) + string(1,casa[1]+1);
-                                if(pgnForPieces[diagDir] != '_' && islower(pgnForPieces[diagDir])){
+                                if(pgn.count(diagDir) > 0&& pgnForPieces[diagDir] != '_' && islower(pgnForPieces[diagDir])){
                                     casasAlvos.push_back(diagDir);
-                                    DrawRectangle(pgn[diagDir].x, pgn[diagDir].y, 100,100,YELLOW_LIGHT);
                                 }
                             }
                            
-                             
-
                             it++;
                             if(pgnForPieces[it->first] == '_'){
 
                                 if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
-                                    casasAlvos.clear();
+                                    //casasAlvos.clear();
                                     casasAlvos.push_back(it->first.c_str());
                                 }
-                                
-                                DrawRectangle(it->second.x, it->second.y,100,100,YELLOW_LIGHT);
-                                
                                 if(it != pgn.end() && casa[1] == '2'){
                                     it++;
                                     if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
                                         casasAlvos.push_back(it->first.c_str());
                                     }
-                                    
-                                    DrawRectangle(it->second.x,it->second.y,100,100,YELLOW_LIGHT);
-                                    
                                 }
                             }
                         }
-                         
+                        break;
                     }
-                    else if(pgnForPieces[casa] == 'p'){
+                    case 'T': {
+                        char col = casa[0];
+                        char lin = casa[1];
+
+                        for(char r = lin + 1; r <= '8';r++){
+                            string nextPos = string(1, col) + string(1, r);
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char r = lin-1; r >= '1'; r--){
+                            string nextPos = string(1, col) + string(1, r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col + 1; col <= 'H'; c++){//poggers!!!!
+                            string nextPos = string(1, c) + string(1, lin);
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col-1;col >= 'A'; c--){
+                            string nextPos = string(1,c)+string(1,lin);
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case 'B':{
+                        char col = casa[0];
+                        char lin = casa[1];
+
+
+                        for(char c = col +1,r = lin + 1; c <= 'H' && r <= '8'; c++, r++){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col -1,r = lin + 1; c <= 'H' && r <= '8'; c--, r++){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col +1,r = lin - 1; c <= 'H' && r <= '8'; c++, r--){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col -1,r = lin - 1; c <= 'H' && r <= '8'; c--, r--){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+
+                        break;
+                    }
+                }//fim switch branco!!!!!!!!
+            }else if(!isWhiteMove){
+                switch(pieceForCase){
+                    case 'p': {
                         auto it = pgn.find(casa);
                         if (it != pgn.end()){
                             it--;
-
                             if (it != pgn.end()) {
 
-                               
                                 if (casa[0] > 'A' && casa[1] > '1') {
                                     string diagEsq = string(1, casa[0] - 1) + string(1, casa[1] - 1);
-                                    if (pgnForPieces[diagEsq] != '_' && isupper(pgnForPieces[diagEsq])) {
+                                    if (pgn.count(diagEsq) > 0 && pgnForPieces[diagEsq] != '_' && isupper(pgnForPieces[diagEsq])) {
                                         casasAlvos.push_back(diagEsq);
-                                        DrawRectangle(pgn[diagEsq].x, pgn[diagEsq].y, 100, 100, YELLOW_LIGHT);
+
                                     }
                                 }
-
                             
                                 if (casa[0] < 'H' && casa[1] > '1') {
                                     string diagDir = string(1, casa[0] + 1) + string(1, casa[1] - 1);
-                                    if (pgnForPieces[diagDir] != '_' && isupper(pgnForPieces[diagDir])) {
+                                    if (pgn.count(diagDir) > 0 && pgnForPieces[diagDir] != '_' && isupper(pgnForPieces[diagDir])) {
                                         casasAlvos.push_back(diagDir);
-                                        DrawRectangle(pgn[diagDir].x, pgn[diagDir].y, 100, 100, YELLOW_LIGHT);
+
                                     }
                                 }
                             }
-
 
                             if(pgnForPieces[it->first] == '_'){    
                                 if(it != pgn.end()){
                                     if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
-                                        casasAlvos.clear();
+                                        //casasAlvos.clear();//ver isso depois eu acho que esta com dados furados aqui !!!! ver esses ifs ai
                                         casasAlvos.push_back(it->first.c_str());
                                     }
-                                    DrawRectangle(it->second.x, it->second.y,100,100,YELLOW_LIGHT);
                                     it--;
                                     if(it != pgn.end() && casa[1] ==  '7'){
                                         if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
                                             casasAlvos.push_back(it->first.c_str());
                                             
                                         }
-                                        DrawRectangle(it->second.x,it->second.y,100,100,YELLOW_LIGHT);
                                     }
                                 }
                             }
                         } 
+                    
+                        break;
                     }
-                    break;
-            
+
+
+                    case 't':{
+                        char col = casa[0];
+                        char lin = casa[1];
+
+                        for(char r = lin + 1; r <= '8';r++){
+                            string nextPos = string(1, col) + string(1, r);
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char r = lin-1; r >= '1'; r--){
+                            string nextPos = string(1, col) + string(1, r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col + 1; col <= 'H'; c++){//poggers!!!!
+                            string nextPos = string(1, c) + string(1, lin);
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col-1;col >= 'A'; c--){
+                            string nextPos = string(1,c)+string(1,lin);
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case 'b': {
+                        char col = casa[0];
+                        char lin = casa[1];
+
+
+                        for(char c = col +1,r = lin + 1; c <= 'H' && r <= '8'; c++, r++){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col -1,r = lin + 1; c <= 'H' && r <= '8'; c--, r++){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col +1,r = lin - 1; c <= 'H' && r <= '8'; c++, r--){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col -1,r = lin - 1; c <= 'H' && r <= '8'; c--, r--){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        
+                        break;
+                    }
+
+                }
             }
-            for(auto& casa : casasAlvos){
-                printf("casas alvos>> %s\n", casa.c_str());
+            //for(auto& casa : casasAlvos){
+             //   printf("casas alvos>> %s\n", casa.c_str());
+            //}
+             if(!apagaressamerda){
+
+                copy(casasAlvos.begin(), casasAlvos.end(), ostream_iterator<string>(cout, " "));
+                apagaressamerda = true;
             }
+
+           
         }   
 
         Vector2 posMouse = GetMousePosition();
@@ -307,9 +519,16 @@ int main(){
         papaBlack.DrawP(pgnForPieces);
         TorresGemeasBlack.DrawP(pgnForPieces);
         
+        for(string& alvos : casasAlvos){
+            DrawRectangle(pgn[alvos].x,pgn[alvos].y,100,100,YELLOW_LIGHT);
+        }
+
         if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
             float x = posMouse.x;
             float y = posMouse.y;
+            //string clickCasa;//
+            bool clickFound = false;
+            
 
             for(auto& cord : pgn){
                 float cx = cord.second.x;
@@ -317,28 +536,38 @@ int main(){
                 
                 if(abs((cx+50) - x) <= 50 && abs((cy + 50) - y) <= 50){
                     casa = cord.first.c_str();
-                    pieceForCase = pgnForPieces[casa];
+                    clickFound = true;
+                    break;
                 }
-
             }
+            if(clickFound){
+                bool isAMove = (find(casasAlvos.begin(), casasAlvos.end(), casa) != casasAlvos.end());
             
-            
-            printf("click >> %s=%c \n", casa.c_str(),pieceForCase);
-            for(auto& I : casasAlvos){
-                if(casa == I){
-                    cout << pedra << "  ERROEROEROEROEROOEROEOREOROEROEOROEROOROEOREO" << "\n";
+                if(isAMove){
+                    printf("click>> %s=%c\n", casa.c_str(), pgnForPieces[casa]);
+                    cout << casasAlvos.size() << " size\n";
                     pgnForPieces[PieceCaseMove] = '_';
                     pgnForPieces[casa] = pedra;
-                    
+
                     PieceCaseMove = "";
+                    isWhiteMove = !isWhiteMove;
                     casasAlvos.clear();
-                
+                    casa = "";
+                    cout << "olooiioioioioiioo" << "\n";
+                }else if(!isAMove){
+                    char selectedP = pgnForPieces[casa];
+                    if((isWhiteMove && isupper(selectedP)) || (!isWhiteMove && islower(selectedP))){
+                        pieceForCase = selectedP;
+                        casasAlvos.clear();
+                        apagaressamerda = false;
+                        printf("click>> %s=%c\n", casa.c_str(), pieceForCase);
+                    }else{
+                        casa = "";
+                        casasAlvos.clear();
+                    }
+                }
             }
         }
-        
-            
-        }
-        
         EndDrawing();
     }
     
