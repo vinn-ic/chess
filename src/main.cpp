@@ -39,7 +39,6 @@ class Pieces{
 
 Color YELLOW_LIGHT = {255, 255, 153, 255};
 
-
 int main(){
     string PieceCaseMove;
     char pedra;
@@ -194,37 +193,29 @@ int main(){
             if(isWhiteMove){//arrumar isso depois esses whitch e ifs do iswhitemove
                 switch(pieceForCase){
                     case 'P': {
-                        auto it = pgn.find(casa);
-                        if (it != pgn.end() ){
-                            if(casa[0] > 'A' && casa[1] < '8'){
-                                string diagEsq = string(1, casa[0] - 1) + string(1,casa[1] + 1);
-                                if(pgn.count(diagEsq) > 0 && pgnForPieces[diagEsq] != '_' && islower(pgnForPieces[diagEsq])){
-                                    casasAlvos.push_back(diagEsq);
-                                }
-                            }
-                            if(casa[0] < 'H' && casa[1] < '8'){
-                                string diagDir = string(1, casa[0]+1) + string(1,casa[1]+1);
-                                if(pgn.count(diagDir) > 0&& pgnForPieces[diagDir] != '_' && islower(pgnForPieces[diagDir])){
-                                    casasAlvos.push_back(diagDir);
-                                }
-                            }
-                           
-                            it++;
-                            if(pgnForPieces[it->first] == '_'){
+                        char col = casa[0];
+                        char lin = casa[1];
+                        string nextDigDir = string(1,col+1) + string(1,lin+1);
+                        string nextDigEsq = string(1, col-1) + string(1,lin+1);
+                        string nextPos1 = string(1, col) + string(1,lin+1);
 
-                                if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
-                                    //casasAlvos.clear();
-                                    casasAlvos.push_back(it->first.c_str());
+                        if(pgnForPieces[nextDigDir] != '_' && islower(pgnForPieces[nextDigDir])) casasAlvos.push_back(nextDigDir);
+                        if(pgnForPieces[nextDigEsq] != '_' && islower(pgnForPieces[nextDigEsq])) casasAlvos.push_back(nextDigEsq);
+
+                        if(lin == '2'){
+                            for(char l = lin+1;l <= '4'; l++){
+                                string nextPos = string(1,col) + string(1, l);
+                                if(pgnForPieces[nextPos] == '_' && pgnForPieces[nextPos1] == '_'){
+                                    casasAlvos.push_back(nextPos);
+                                   // pgnForPieces[nextPos] = '&';
                                 }
-                                if(it != pgn.end() && casa[1] == '2'){
-                                    it++;
-                                    if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
-                                        casasAlvos.push_back(it->first.c_str());
-                                    }
-                                }
+                            
                             }
-                        }
-                        break;
+
+                        }if(pgnForPieces[nextPos1] == '_') if(pgnForPieces[nextPos1] == '_') casasAlvos.push_back(nextPos1);
+
+                    
+                    break;
                     }
                     case 'T': {
                         char col = casa[0];
@@ -333,48 +324,181 @@ int main(){
 
                         break;
                     }
+                    case 'C': {
+                        char col = casa[0];
+                        char lin = casa[1];
+
+                        int colCavalo[] = {1,1,2,2,-1,-1,-2,-2};
+                        int linCavalo[] = {2,-2,1,-1,2,-2,1,-1};
+
+                        for(int i = 0;i < 8;i++){
+                            char nextCol = col + colCavalo[i];
+                            char nextLin = lin + linCavalo[i];
+
+                            if(nextCol >= 'A' && nextCol <= 'H' && nextLin >= '1' && nextLin <= '8'){
+                                string nextPos = string(1, nextCol) + string(1, nextLin);
+                                if(pgnForPieces[nextPos] == '_' || islower(pgnForPieces[nextPos])) casasAlvos.push_back(nextPos);
+                            }
+                        }
+
+                        break;
+                    }
+                    case 'D': {
+                        char col = casa[0];
+                        char lin = casa[1];
+
+                        //lados \|/
+                          for(char r = lin + 1; r <= '8';r++){
+                            string nextPos = string(1, col) + string(1, r);
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char r = lin-1; r >= '1'; r--){
+                            string nextPos = string(1, col) + string(1, r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col + 1; col <= 'H'; c++){//poggers!!!!
+                            string nextPos = string(1, c) + string(1, lin);
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col-1;col >= 'A'; c--){
+                            string nextPos = string(1,c)+string(1,lin);
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+
+
+                        //diagonais \|/
+                        for(char c = col +1,r = lin + 1; c <= 'H' && r <= '8'; c++, r++){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col -1,r = lin + 1; c <= 'H' && r <= '8'; c--, r++){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col +1,r = lin - 1; c <= 'H' && r <= '8'; c++, r--){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col -1,r = lin - 1; c <= 'H' && r <= '8'; c--, r--){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(islower(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case 'R': {
+                        char col = casa[0];
+                        char lin = casa[1];
+
+                        for(int dx = -1;dx <=1;dx++){
+                            for(int dy = -1;dy <=1;dy++){
+                                if(dx == 0 && dy == 0) continue;
+
+                                char newCol = col + dx;
+                                char newLin = lin + dy;
+
+                                if(newCol >= 'A' && newCol <= 'H' && newLin >= '1' && newLin <= '8' ){
+                                    string nextPos = string(1, newCol)+string(1,newLin);
+
+                                    if(islower(pgnForPieces[nextPos]) || pgnForPieces[nextPos] == '_'){
+                                        casasAlvos.push_back(nextPos);
+                                    }
+                                }
+                            }
+                        }
+
+                            
+                        
+                       
+
+                        break;
+                    }
                 }//fim switch branco!!!!!!!!
             }else if(!isWhiteMove){
                 switch(pieceForCase){
                     case 'p': {
-                        auto it = pgn.find(casa);
-                        if (it != pgn.end()){
-                            it--;
-                            if (it != pgn.end()) {
+                        char col = casa[0];
+                        char lin = casa[1];
+                        string nextDigDir = string(1,col-1) + string(1,lin-1);
+                        string nextDigEsq = string(1, col+1) + string(1,lin-1);
+                        string nextPos1 = string(1, col) + string(1,lin-1);
 
-                                if (casa[0] > 'A' && casa[1] > '1') {
-                                    string diagEsq = string(1, casa[0] - 1) + string(1, casa[1] - 1);
-                                    if (pgn.count(diagEsq) > 0 && pgnForPieces[diagEsq] != '_' && isupper(pgnForPieces[diagEsq])) {
-                                        casasAlvos.push_back(diagEsq);
+                        if(pgnForPieces[nextDigDir] != '_' && isupper(pgnForPieces[nextDigDir])) casasAlvos.push_back(nextDigDir);
+                        if(pgnForPieces[nextDigEsq] != '_' && isupper(pgnForPieces[nextDigEsq])) casasAlvos.push_back(nextDigEsq);
 
-                                    }
+                        if(lin == '7'){
+                            for(char l = lin-1;l >= '5'; l--){
+                                string nextPos = string(1,col) + string(1, l);
+                                if(pgnForPieces[nextPos] == '_' && pgnForPieces[nextPos1] == '_'){
+                                    casasAlvos.push_back(nextPos);
+                                    //pgnForPieces[nextPos] = '&';
                                 }
                             
-                                if (casa[0] < 'H' && casa[1] > '1') {
-                                    string diagDir = string(1, casa[0] + 1) + string(1, casa[1] - 1);
-                                    if (pgn.count(diagDir) > 0 && pgnForPieces[diagDir] != '_' && isupper(pgnForPieces[diagDir])) {
-                                        casasAlvos.push_back(diagDir);
-
-                                    }
-                                }
                             }
 
-                            if(pgnForPieces[it->first] == '_'){    
-                                if(it != pgn.end()){
-                                    if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
-                                        //casasAlvos.clear();//ver isso depois eu acho que esta com dados furados aqui !!!! ver esses ifs ai
-                                        casasAlvos.push_back(it->first.c_str());
-                                    }
-                                    it--;
-                                    if(it != pgn.end() && casa[1] ==  '7'){
-                                        if(find(casasAlvos.begin(), casasAlvos.end(), it->first.c_str()) == casasAlvos.end()){
-                                            casasAlvos.push_back(it->first.c_str());
-                                            
-                                        }
-                                    }
-                                }
-                            }
-                        } 
+                        }if(pgnForPieces[nextPos1] == '_') if(pgnForPieces[nextPos1] == '_') casasAlvos.push_back(nextPos1);
+
+                    
                     
                         break;
                     }
@@ -487,6 +611,154 @@ int main(){
                         
                         break;
                     }
+                    case 'c': {
+                        char col = casa[0];
+                        char lin = casa[1];
+
+                        int colCavalo[] = {1,1,2,2,-1,-1,-2,-2};
+                        int linCavalo[] = {2,-2,1,-1,2,-2,1,-1};
+
+                        for(int i = 0;i < 8;i++){
+                            char nextCol = col + colCavalo[i];
+                            char nextLin = lin + linCavalo[i];
+
+                            if(nextCol >= 'A' && nextCol <= 'H' && nextLin >= '1' && nextLin <= '8'){
+                                string nextPos = string(1, nextCol) + string(1, nextLin);
+                                if(pgnForPieces[nextPos] == '_' || isupper(pgnForPieces[nextPos])) casasAlvos.push_back(nextPos);
+                            }
+                        }
+
+
+                        break;
+                    }
+                    case 'd': {
+                        char col = casa[0];
+                        char lin = casa[1];
+
+                        //lados \|/
+                          for(char r = lin + 1; r <= '8';r++){
+                            string nextPos = string(1, col) + string(1, r);
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char r = lin-1; r >= '1'; r--){
+                            string nextPos = string(1, col) + string(1, r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col + 1; col <= 'H'; c++){//poggers!!!!
+                            string nextPos = string(1, c) + string(1, lin);
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col-1;col >= 'A'; c--){
+                            string nextPos = string(1,c)+string(1,lin);
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+
+
+                        //diagonais \|/
+                        for(char c = col +1,r = lin + 1; c <= 'H' && r <= '8'; c++, r++){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col -1,r = lin + 1; c <= 'H' && r <= '8'; c--, r++){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col +1,r = lin - 1; c <= 'H' && r <= '8'; c++, r--){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+                        for(char c = col -1,r = lin - 1; c <= 'H' && r <= '8'; c--, r--){
+                            string nextPos = string(1,c) + string(1,r);
+
+                            if(pgnForPieces[nextPos] == '_'){
+                                casasAlvos.push_back(nextPos);
+                            }else{
+                                if(isupper(pgnForPieces[nextPos])){
+                                    casasAlvos.push_back(nextPos);
+                                }
+                                break;
+                            }
+                        }
+
+
+                        break;
+                    }
+                    case 'r': {
+                        char col = casa[0];
+                        char lin = casa[1];
+
+                        for(int dx = -1;dx <=1;dx++){
+                            for(int dy = -1;dy <=1;dy++){
+                                if(dx == 0 && dy == 0) continue;
+
+                                char newCol = col + dx;
+                                char newLin = lin + dy;
+
+                                if(newCol >= 'A' && newCol <= 'H' && newLin >= '1' && newLin <= '8' ){
+                                    string nextPos = string(1, newCol)+string(1,newLin);
+
+                                    if(isupper(pgnForPieces[nextPos]) || pgnForPieces[nextPos] == '_'){
+                                        casasAlvos.push_back(nextPos);
+                                    }
+                                }
+                            }
+                        }
+
+                        break;
+                    }
 
                 }
             }
@@ -519,9 +791,7 @@ int main(){
         papaBlack.DrawP(pgnForPieces);
         TorresGemeasBlack.DrawP(pgnForPieces);
         
-        for(string& alvos : casasAlvos){
-            DrawRectangle(pgn[alvos].x,pgn[alvos].y,100,100,YELLOW_LIGHT);
-        }
+       
 
         if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
             float x = posMouse.x;
@@ -567,6 +837,16 @@ int main(){
                     }
                 }
             }
+        }
+        sort(casasAlvos.begin(), casasAlvos.end());
+        auto fimUnicos = unique(casasAlvos.begin(), casasAlvos.end());
+        casasAlvos.erase(fimUnicos, casasAlvos.end());
+
+      
+
+         for(string& alvos : casasAlvos){
+            DrawRectangle(pgn[alvos].x,pgn[alvos].y,100,100,YELLOW_LIGHT);
+            cout << casasAlvos.size() << "\n";
         }
         EndDrawing();
     }
