@@ -38,6 +38,9 @@ class Pieces{
 };
 
 Color YELLOW_LIGHT = {255, 255, 153, 255};
+Color GREEN_LIGHT =  {40, 40, 40, 255};
+
+
 
 
 bool WhiteRookRigthIsMove = false;
@@ -47,6 +50,10 @@ bool BlackRookLeftIsMove = false;
 
 bool WhiteKingIsMove = false;
 bool BlackKingIsMove = false;
+
+bool KingBlackIsDeath = false;
+bool KingWhiteIsDeath = false;
+bool RunChess = true;
 
 int main(){
     string PieceCaseMove;
@@ -194,7 +201,7 @@ int main(){
             }  
         }
 
-        if(!casa.empty()){
+        if(!casa.empty() && RunChess){
             DrawRectangle(pgn[casa].x,pgn[casa].y,100,100,YELLOW);
             PieceCaseMove = casa;
             pedra = pgnForPieces[casa];
@@ -801,6 +808,10 @@ int main(){
 
         Vector2 posMouse = GetMousePosition();
 
+         for(string& alvos : casasAlvos){
+            DrawRectangle(pgn[alvos].x,pgn[alvos].y,100,100,YELLOW_LIGHT);
+            cout << casasAlvos.size() << "\n";
+        }
 
         Pawn.DrawP(pgnForPieces);
         Queen.DrawP(pgnForPieces);
@@ -815,10 +826,9 @@ int main(){
         vacaloBlack.DrawP(pgnForPieces);
         papaBlack.DrawP(pgnForPieces);
         TorresGemeasBlack.DrawP(pgnForPieces);
-        
-       
+    
 
-        if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+        if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && RunChess){
             float x = posMouse.x;
             float y = posMouse.y;
             //string clickCasa;//
@@ -860,12 +870,13 @@ int main(){
                         pgnForPieces["C8"] = 'r';
                         pgnForPieces["D8"] = 't';
                     }
-
-                        
                         
                         printf("click>> %s=%c\n", casa.c_str(), pgnForPieces[casa]);
                         cout << casasAlvos.size() << " size\n";
                         pgnForPieces[PieceCaseMove] = '_';
+                        if(pgnForPieces[casa] == 'R') KingWhiteIsDeath = true;
+                        if(pgnForPieces[casa] == 'r') KingBlackIsDeath = true;
+                        if(KingBlackIsDeath || KingWhiteIsDeath) RunChess = false;
                         pgnForPieces[casa] = pedra;
 
                         if(pedra == 'r') BlackKingIsMove = true;
@@ -893,29 +904,24 @@ int main(){
                             casa = "";
                             casasAlvos.clear();
                         }
-                    
+                    }   
                 }
-            }
         }
         sort(casasAlvos.begin(), casasAlvos.end());
         auto fimUnicos = unique(casasAlvos.begin(), casasAlvos.end());
         casasAlvos.erase(fimUnicos, casasAlvos.end());
 
-      
+        
+        if(!RunChess){
+            string texto = "ERRO[ERRO[ERRO[EROO]]]";
+            if(KingWhiteIsDeath) texto = "Vitória das pretas!";
+            if(KingBlackIsDeath) texto = "Vitória das brancas!";
 
-         for(string& alvos : casasAlvos){
-            DrawRectangle(pgn[alvos].x,pgn[alvos].y,100,100,YELLOW_LIGHT);
-            cout << casasAlvos.size() << "\n";
+            DrawRectangle(telaX/8,telaY/4,600,400,GREEN_LIGHT);
+            DrawText(texto.c_str(),telaX/2,telaY/2,35,BLACK);
         }
         EndDrawing();
     }
     
-
-
     return 0;
 }
-
-//g++ main.cpp -o main.exe -I"D:/raylib/src" -L"D:/raylib/build/raylib" -lraylib -lopengl32 -lgdi32 -lwinmm {windows}
-// g++ main.cpp -o main -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 {linux}
-
-//g++ main.cpp -o /home/vinicius-pc/exe/chess/src/main -I//home/vinicius-pc/raylib/build/raylib/include/ -L/home/vinicius-pc/raylib/build/raylib/ -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
