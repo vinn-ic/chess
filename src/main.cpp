@@ -849,43 +849,48 @@ int main(){
                 bool isAMove = (find(casasAlvos.begin(), casasAlvos.end(), casa) != casasAlvos.end());
             
                 if(isAMove){
+                    if(pgnForPieces[casa] == 'R') KingWhiteIsDeath = true;
+                    if(pgnForPieces[casa] == 'r') KingBlackIsDeath = true;
+                    if(KingBlackIsDeath || KingWhiteIsDeath) RunChess = false;
+
                     if(pedra == 'R' && casa == "C1"){
                         pgnForPieces["E1"] = '_';
                         pgnForPieces["A1"] = '_';
                         pgnForPieces["C1"] = 'R';
                         pgnForPieces["D1"] = 'T';
+                        WhiteKingIsMove = true;
+                        WhiteRookLeftIsMove = true;
                     }if(pedra == 'R' && casa == "G1"){
                         pgnForPieces["E1"] = '_';
                         pgnForPieces["H1"] = '_';
                         pgnForPieces["G1"] = 'R';
                         pgnForPieces["F1"] = 'T';
+                        WhiteKingIsMove = true;
+                        WhiteRookRigthIsMove = true;
                     }if(pedra == 'r' && casa == "G8"){
                         pgnForPieces["E8"] = '_';
                         pgnForPieces["H8"] = '_';
                         pgnForPieces["G8"] = 'r';
                         pgnForPieces["F8"] = 't';
+                        BlackRookLeftIsMove = true;
+                        BlackKingIsMove = true;
                     }if(pedra == 'r'&& casa == "C8"){
                         pgnForPieces["E8"] = '_';
                         pgnForPieces["A8"] = '_';
                         pgnForPieces["C8"] = 'r';
                         pgnForPieces["D8"] = 't';
+                        BlackRookRigthIsMove = true;
+                        BlackKingIsMove = true;
                     }
                         
                         printf("click>> %s=%c\n", casa.c_str(), pgnForPieces[casa]);
                         cout << casasAlvos.size() << " size\n";
                         pgnForPieces[PieceCaseMove] = '_';
-                        if(pgnForPieces[casa] == 'R') KingWhiteIsDeath = true;
-                        if(pgnForPieces[casa] == 'r') KingBlackIsDeath = true;
-                        if(KingBlackIsDeath || KingWhiteIsDeath) RunChess = false;
+                        
                         pgnForPieces[casa] = pedra;
 
                         if(pedra == 'r') BlackKingIsMove = true;
                         if(pedra == 'R') WhiteKingIsMove = true;
-                        
-                        if(pedra == 't' && PieceCaseMove == "H8") BlackRookRigthIsMove = true;
-                        if(pedra == 't' && PieceCaseMove == "A8") BlackRookLeftIsMove = true;
-                        if(pedra == 'T' && PieceCaseMove == "H1") WhiteRookRigthIsMove = true;
-                        if(pedra == 'T' && PieceCaseMove == "A1") WhiteRookLeftIsMove = true;
                         
                         PieceCaseMove = "";
                         isWhiteMove = !isWhiteMove;
