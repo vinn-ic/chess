@@ -885,6 +885,8 @@ int main(){
                         
                         printf("click>> %s=%c\n", casa.c_str(), pgnForPieces[casa]);
                         cout << casasAlvos.size() << " size\n";
+                        if(casa[1] == '8' && pgnForPieces[PieceCaseMove] == 'P') pedra = 'D';
+                        if(casa[1] == '1' && pgnForPieces[PieceCaseMove] == 'p') pedra = 'd';
                         pgnForPieces[PieceCaseMove] = '_';
                         
                         pgnForPieces[casa] = pedra;
