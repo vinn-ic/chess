@@ -853,28 +853,28 @@ int main(){
                     if(pgnForPieces[casa] == 'r') KingBlackIsDeath = true;
                     if(KingBlackIsDeath || KingWhiteIsDeath) RunChess = false;
 
-                    if(pedra == 'R' && casa == "C1"){
+                    if(pedra == 'R' && casa == "C1" && !WhiteKingIsMove){
                         pgnForPieces["E1"] = '_';
                         pgnForPieces["A1"] = '_';
                         pgnForPieces["C1"] = 'R';
                         pgnForPieces["D1"] = 'T';
                         WhiteKingIsMove = true;
                         WhiteRookLeftIsMove = true;
-                    }if(pedra == 'R' && casa == "G1"){
+                    }if(pedra == 'R' && casa == "G1" && !WhiteKingIsMove){
                         pgnForPieces["E1"] = '_';
                         pgnForPieces["H1"] = '_';
                         pgnForPieces["G1"] = 'R';
                         pgnForPieces["F1"] = 'T';
                         WhiteKingIsMove = true;
                         WhiteRookRigthIsMove = true;
-                    }if(pedra == 'r' && casa == "G8"){
+                    }if(pedra == 'r' && casa == "G8" && !BlackKingIsMove){
                         pgnForPieces["E8"] = '_';
                         pgnForPieces["H8"] = '_';
                         pgnForPieces["G8"] = 'r';
                         pgnForPieces["F8"] = 't';
                         BlackRookLeftIsMove = true;
                         BlackKingIsMove = true;
-                    }if(pedra == 'r'&& casa == "C8"){
+                    }if(pedra == 'r'&& casa == "C8" && !BlackKingIsMove){
                         pgnForPieces["E8"] = '_';
                         pgnForPieces["A8"] = '_';
                         pgnForPieces["C8"] = 'r';
